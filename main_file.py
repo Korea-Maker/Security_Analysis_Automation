@@ -34,11 +34,11 @@ def main_switch(selected_option):
 if __name__ == '__main__' :
     print("\n")
     print("----------------------------------------")
-    print("Security Analysis Automation")
+    print("보안 분석 자동화")
     print("----------------------------------------")
-    print("\nThe SOC Analyst's tool to automate"
-    "\nthe investigation and validation of possible "
-    "\nIndicators of Compromise (IOCs)")
+    print("\nSOC 분석가의 도구로서 자동화된 방법으로 "
+    "\n잠재적인 침해 지표(IOCs)를 조사하고 "
+    "\n검증합니다.")
     time.sleep(1)
     while True:
         try:
