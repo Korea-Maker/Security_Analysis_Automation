@@ -127,58 +127,57 @@ def dnslookup():
         menu()
 
 def whoislookup():
-
-    ip = str(input("Enter IP Address to check :").strip())
-    
+    ip = input("확인할 IP 주소를 입력하세요: ").strip()
     try:
-        client = Client(config.key_dictionary['Spyse API Key'])
-        ip_details = client.get_ip_details(ip)
         obj = IPWhois(ip)
-        res = obj.lookup_whois()
-        addr = str(res['nets'][0]['address'])
-        addr = addr.replace('\n', ', ')
-        print("\n")
-        print("------------")
+        res = obj.lookup_rdap()
+        addr = str(res['network']['address']).replace('\n', ', ')
+        print("\n------------")
         print("WHOIS RECORD")
         print("------------")
-        print("CIDR         :" + str(res['nets'][0]['cidr']))
-        print("Name         :" + str(res['nets'][0]['name']))
-        print("Range        :" + str(res['nets'][0]['range']))
-        print("Descr        :" + str(res['nets'][0]['description']))
-        print("Country      :" + str(res['nets'][0]['country']))
-        print("Address      :" + addr)
-        if str(ip_details.ports) != "None" :
-            print("Domain Name   :", str(ip_details.ports[0].http_extract.final_redirect_url.host))
-            print("Full URL      :", str(ip_details.ports[0].http_extract.final_redirect_url.full_uri))
-        print("ISP Details  :", str(ip_details.isp_info))
-        print("Created      :" + str(res['nets'][0]['created']))
-        print("Updated      :" + str(res['nets'][0]['updated']))
+        print(f"CIDR         : {res['network']['cidr']}")
+        print(f"Name         : {res['network']['name']}")
+        print(f"Range        : {res['network']['start_address']} - {res['network']['end_address']}")
+        print(f"Descr        : {res['network']['remarks']}")
+        print(f"Country      : {res['network']['country']}")
+        print(f"Address      : {addr}")
+        print(f"Created      : {res['network']['created']}")
+        print(f"Updated      : {res['network']['updated']}")
+
+        # ISP 및 ORG 정보 (ipinfo.io 추가 출력)
+        api_token = config.key_dictionary['ipinfo API Key']
+        url = f"https://ipinfo.io/{ip}/json?token={api_token}"
+        response = requests.get(url)
+        info = response.json()
+        print(f"ORG          : {info.get('org', '정보 없음')}")
+        print(f"ASN          : {info.get('asn', {}).get('asn', '정보 없음')}")
         menu()
-    except:
-        print("Invalid or Private IP Address")
+    except Exception as e:
+        print("잘못됐거나 사설 IP 주소입니다.")
+        print("오류:", e)
         menu()
 
-def isplookup() :
-    ip_address = str(input("Enter IP Address to check :").strip())
-    print("\n")
-    print("----------")
+def isplookup():
+    ip_address = input("확인할 IP 주소를 입력하세요: ").strip()
+    print("\n----------")
     print("ISP RECORD")
     print("----------")
     try:
-        client = Client(config.key_dictionary['Spyse API Key'])
-        ip_details = client.get_ip_details(ip_address)
-        print("\nIP Address    :", ip_details.ip)
-        print("AS Number       :", str(ip_details.isp_info.as_num))
-        print("AS Organization :", str(ip_details.isp_info.as_org))
-        print("ISP             :", str(ip_details.isp_info.isp))
-        print("City Name       :", str(ip_details.geo_info.city_name))
-        print("City Name       :", str(ip_details.geo_info.country))
-        print("City Name       :", str(ip_details.geo_info.country_iso_code))
-        print("Location        :", str(ip_details.geo_info.location))
-        if str(ip_details.ports) != "None" :
-            print("Domain Name   :", str(ip_details.ports[0].http_extract.final_redirect_url.host))
-            print("Full URL      :", str(ip_details.ports[0].http_extract.final_redirect_url.full_uri))
+        api_token = config.key_dictionary['ipinfo API Key']
+        url = f"https://ipinfo.io/{ip_address}/json?token={api_token}"
+        response = requests.get(url)
+        info = response.json()
+
+        print(f"\nIP Address      : {info.get('ip')}")
+        print(f"ASN             : {info.get('asn', {}).get('asn', '-') if info.get('asn') else '정보 없음'}")
+        print(f"AS Org          : {info.get('asn', {}).get('name', '-') if info.get('asn') else info.get('org', '정보 없음')}")
+        print(f"ORG/ISP         : {info.get('org', '정보 없음')}")
+        print(f"도시            : {info.get('city', '')}")
+        print(f"지역            : {info.get('region', '')}")
+        print(f"국가            : {info.get('country', '')}")
+        print(f"좌표            : {info.get('loc', '')}")
         menu()
-    except:
-        print("Hostname for give IP not found")
+    except Exception as e:
+        print("해당 IP에 대한 정보를 찾을 수 없습니다.")
+        print("오류:", e)
         menu()
