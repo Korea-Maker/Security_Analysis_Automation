@@ -53,39 +53,43 @@ def screenshot():
     
     headers = {'Content-Type': 'application/json','API-Key': urlscanapikey}
     try:
-        response = requests.post('https://urlscan.io/api/v1/scan/', headers=headers, data='{"url": "%s", "%s": "on"}' % (url, scan_type)).json()
+        response = requests.post(
+            'https://urlscan.io/api/v1/scan/',
+            headers=headers,
+            data='{"url": "%s", "%s": "on"}' % (url, scan_type)
+        ).json()
         print(response['message'])
-        print("Visibility :",response['visibility'])
-        print("Unique ID  :", response['uuid'])
+        print("공개/비공개 여부 :", response['visibility'])
+        print("고유 ID          :", response['uuid'])
 
         if 'successful' in response['message']:
-            print(f"Scanning {url}")
+            print(f"{url}을(를) 스캔 중입니다.")
             print("\n")
-            print("이 웹사이트의 로딩이 완료되기를 기다리는 중입니다. 몇 분 정도 걸릴 수 있습니다.")
-            print("결과로 자동 리디렉션되므로 명령을 다시 실행할 필요가 없습니다!")
+            print("웹사이트가 로딩 완료될 때까지 기다리는 중입니다. 몇 분 정도 소요될 수 있습니다.")
+            print("결과 페이지로 자동 이동하니, 명령을 다시 실행하지 않으셔도 됩니다!")
 
             time.sleep(50)
-            final_response = requests.get(f'https://urlscan.io/api/v1/result/{response['uuid']}/').json()
-
-            #print(final_response) # Debug
+            final_response = requests.get(
+                f'https://urlscan.io/api/v1/result/{response["uuid"]}/'
+            ).json()
 
             print("\n")
-            print("------------------")
-            print("URL SCAN IO 보고서")
-            print("------------------")
+            print("-----------------------")
+            print("URL SCAN IO 상세 보고서")
+            print("-----------------------")
             print("\n")
-            print(f"URL Scanned       : {final_response['task']['url']}")
-            print(f"Overall Score     : {final_response['verdicts']['overall']['score']}")
-            print(f"Malicious         : {final_response['verdicts']['overall']['malicious']}")
-            print(f"Screenshot of URL : {final_response['task']['screenshotURL']}")
-            print(f"URLSCAN Score     : {final_response['verdicts']['urlscan']['score']}")
+            print(f"스캔한 URL         : {final_response['task']['url']}")
+            print(f"종합 점수          : {final_response['verdicts']['overall']['score']}")
+            print(f"악성 여부          : {final_response['verdicts']['overall']['malicious']}")
+            print(f"URL 스크린샷       : {final_response['task']['screenshotURL']}")
+            print(f"URLSCAN 점수       : {final_response['verdicts']['urlscan']['score']}")
             if final_response['verdicts']['urlscan']['categories']:
-                print("Categories: ")
+                print("카테고리: ")
                 for line in final_response['verdicts']['urlscan']['categories']:
-                    print(f"\t {line}")
-            print(f"URLSCAN Report Reference : {final_response['task']['reportURL']}")
+                    print(f"\t{line}")
+            print(f"URLSCAN 보고서 링크: {final_response['task']['reportURL']}")
     except:
-        print("오류가 발생했습니다. 제한 사항으로 인해 URL 스캔에서 도메인을 확인 및 스캔할 수 없습니다.")
+        print("오류가 발생했습니다. 정책 또는 제한으로 인해 URL SCAN에서 도메인을 조회·스캔할 수 없습니다.")
     menu()
 
 def url_reputation_check():

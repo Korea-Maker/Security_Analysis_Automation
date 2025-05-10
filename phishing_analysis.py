@@ -95,7 +95,7 @@ def email_address_validation():
     menu()
 
 def phishing_site():
-    url = str(input("Enter URL to check :").strip())
+    url = str(input("피싱 의심 사이트 주소를 입력해주세요: ").strip())
     reputation_check.check_url_reputation(url)
     menu()
 

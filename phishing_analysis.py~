@@ -7,6 +7,7 @@ import reputation_check
 import tkinter
 from tkinter import filedialog
 import webbrowser
+import requests
 
 def menu():
     print("\n")
@@ -41,36 +42,60 @@ def phishing_analysis_menu(selected_option):
         menu()
 
 def email_address_validation():
-    email_address = str(input("Enter Email Address to check :").strip())
+    email_address = input("확인할 이메일 주소를 입력하세요: ").strip()
     print("\n")
     print("-----------------------")
-    print("Email Reputation REPORT")
+    print("이메일 신뢰도 보고서")
     print("-----------------------")
+
+    api_key = config.key_dictionary['ZeroBounce API Key']
+    url = f"https://api.zerobounce.net/v2/validate?api_key={api_key}&email={email_address}"
+
     try:
-        # setup your api key (optional)
-        emailrep = EmailRep(config.key_dictionary['Email Reputation IO API Key'])
-        # query an email address
-        results = emailrep.query(email_address)
-        print("Submitted Email           :", results['email'])
-        print("Email Reputation          :", results['reputation'])
-        print("Is Email Suspicious       :", results['suspicious'])
-        print("Is Email Blacklisted      :", results['details']['blacklisted'])
-        print("Recent Malicious Activity :", results['details']['malicious_activity_recent'])
-        print("Credential Leak           :", results['details']['credentials_leaked'])
-        print("Recent Credential Leak    :", results['details']['credentials_leaked_recent'])
-        print("Found in Data Breach      :", results['details']['data_breach'])
-        print("Domain Reputation         :", results['details']['domain_reputation'])
-        print("Number of Days since Domain Creation :", results['details']['days_since_domain_creation'])
-        print("Spam Reputation           :", results['details']['spam'])
-        print("is Domain Spoofable       :", results['details']['spoofable'])
-        print("Profiles                  :", results['details']['profiles'])
-        print("Summary :\n", results['summary'])
-    except:
-        print("Email Not Found")
+        response = requests.get(url).json()
+
+        # 주요 결과 필드 추출
+        status = response.get('status', '정보 없음')
+        sub_status = response.get('sub_status', '정보 없음')
+        address = response.get('address', '정보 없음')
+        account = response.get('account', '정보 없음')
+        domain = response.get('domain', '정보 없음')
+        did_you_mean = response.get('did_you_mean', '정보 없음')
+        free_email = response.get('free_email', '정보 없음')
+        mx_found = response.get('mx_found', '정보 없음')
+        smtp_check = response.get('smtp_check', '정보 없음')
+        catch_all = response.get('catch_all', '정보 없음')
+        disposable = response.get('disposable', '정보 없음')
+        toxic = response.get('toxic', '정보 없음')
+        firstname = response.get('first_name', '정보 없음')
+        lastname = response.get('last_name', '정보 없음')
+        gender = response.get('gender', '정보 없음')
+        country = response.get('country', '정보 없음')
+
+        # 결과 출력 (f-string, 한국어)
+        print(f"이메일 주소                  : {address}")
+        print(f"검증 상태                    : {status}")
+        print(f"상세 상태                    : {sub_status}")
+        print(f"계정명                       : {account}")
+        print(f"도메인                       : {domain}")
+        print(f"오타 추천                    : {did_you_mean}")
+        print(f"무료 이메일 여부             : {free_email}")
+        print(f"MX 레코드 존재 여부          : {mx_found}")
+        print(f"SMTP 검사 결과               : {smtp_check}")
+        print(f"Catch-All 여부               : {catch_all}")
+        print(f"일회용 메일 여부             : {disposable}")
+        print(f"유해(스팸성) 이메일 여부      : {toxic}")
+        print(f"이름                         : {firstname} {lastname}")
+        print(f"성별                         : {gender}")
+        print(f"국가                         : {country}")
+
+    except Exception as e:
+        print("이메일 정보를 확인할 수 없습니다.")
+
     menu()
 
 def phishing_site():
-    url = str(input("Enter URL to check :").strip())
+    url = str(input("피싱:").strip())
     reputation_check.check_url_reputation(url)
     menu()
 
