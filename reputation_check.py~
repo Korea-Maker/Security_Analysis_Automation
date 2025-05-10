@@ -71,17 +71,15 @@ def check_ip_reputation(ip):
     reference = "https://www.abuseipdb.com/check/"+ip
 
     try:
-        response = requests.get(ABIPDB_URL, headers=headers, params=querystring, verify=False)
+        response = requests.request(method='GET', url=ABIPDB_URL, headers=headers, params=querystring)
         result = response.json()
-        data = result.get('data', {})
-        print(f"\nIP 주소:            {data.get('ipAddress', '정보 없음')}")
-        print(f"신고된 횟수:         {data.get('totalReports', '정보 없음')}")
-        print(f"악용 신뢰도 점수:    {data.get('abuseConfidenceScore', '정보 없음')}%")
-        print(f"마지막 신고 날짜:     {data.get('lastReportedAt', '없음')}")
-        print(f"신고 상세보기:       {reference}")
-    except Exception as e:
-        print("IP 정보를 찾을 수 없습니다.")
-        print("오류:", e)
+        print("\nIP Address      :" + str(result['data']['ipAddress']))
+        print("Number of Reports :" + str(result['data']['totalReports']))
+        print("Abuse Score       :" + str(result['data']['abuseConfidenceScore']) + "%")
+        print("Last Reported on  :" + str(result['data']['lastReportedAt']))
+        print("Report Reference  :" + reference)        
+    except:
+        print("IP not found")
 
     print("\n")
     print("---------------------")

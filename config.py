@@ -39,7 +39,7 @@ def api_key_config():
     api_key_filename = 'apiKeyFileName.ini'
     crypto_key_filename = 'cryptoKey.key'
     file_handle = open(api_key_filename, 'w')
-    intel_list = ['VirusTotal', 'Abuse IP DB', 'URLScan IO', 'AlienVault OTX', 'ipinfo', 'Email Reputation IO']
+    intel_list = ['VirusTotal', 'Abuse IP DB', 'URLScan IO', 'AlienVault OTX', 'ipinfo', 'Email Reputation IO', 'ZeroBounce']
     for i in range(0, len(intel_list)):
         print(f"{intel_list[i]} 의 API를 입력 : ")
         api_key = str(input())

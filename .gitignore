@@ -2,3 +2,4 @@ __pycache__
 *.pyc
 apiKeyFileName.ini
 cryptoKey.key
+test.py

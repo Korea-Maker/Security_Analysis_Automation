@@ -114,9 +114,11 @@ def whoislookup():
 
     # 기본 정보 조회 - ipinfo.io 활용
     try:
+        import requests
+        import config
 
         # ipinfo.io API로 기본 정보 조회
-        api_token = config.key_dictionary['ipinfo API Key']
+        api_token = "b54e55f6604899"
         url = f"https://ipinfo.io/{ip}/json"
         if api_token:
             url += f"?token={api_token}"
@@ -145,7 +147,7 @@ def whoislookup():
                     print(f"ASN          : {asn_info}")
         else:
             print(f"ipinfo.io API 요청 실패: 상태 코드 {response.status_code}")
-
+        
         try:
             import whois
             from ipaddress import ip_address, IPv4Address
@@ -155,6 +157,7 @@ def whoislookup():
             if not ip_obj.is_private:
                 print("\n--- 추가 정보 ---")
                 # IP 주소를 역방향 DNS로 도메인 찾기 시도
+                import socket
                 try:
                     domain = socket.gethostbyaddr(ip)[0]
                     w = whois.whois(domain)

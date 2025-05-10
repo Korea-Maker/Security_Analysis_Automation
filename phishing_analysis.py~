@@ -1,0 +1,96 @@
+import config
+import email
+from emailrep import EmailRep
+import file_sandbox
+from PIL import Image
+import reputation_check
+import tkinter
+from tkinter import filedialog
+import webbrowser
+
+def menu():
+    print("\n")
+    print("----------------------------------------")
+    print("이메일 보안 (피싱 이메일 분석)")
+    print("----------------------------------------")
+
+    print("\n아래 옵션 중에서 선택해 주세요 : ")
+    print("옵션 1: 이메일 주소 확인")
+    print("옵션 2: 피싱 사이트 분석")
+    print("옵션 3: 이메일 첨부파일 샌드박스")
+    print("옵션 4: 이메일 헤더 분석")
+    print("옵션 5: 피싱 공격 식별을 위한 일반 가이드라인")
+    print("옵션 0: 종료")
+    phishing_analysis_menu(int(input()))
+
+def phishing_analysis_menu(selected_option):
+
+    options = {
+        1: email_address_validation,
+        2: phishing_site,
+        3: attachment_sandbox,
+        4: header_analysis,
+        5: guidelines,
+        0: lambda: None
+    }
+
+    if selected_option in options:
+        options[selected_option]()
+    else:
+        print("잘못된 입력입니다.")
+        menu()
+
+def email_address_validation():
+    email_address = str(input("Enter Email Address to check :").strip())
+    print("\n")
+    print("-----------------------")
+    print("Email Reputation REPORT")
+    print("-----------------------")
+    try:
+        # setup your api key (optional)
+        emailrep = EmailRep(config.key_dictionary['Email Reputation IO API Key'])
+        # query an email address
+        results = emailrep.query(email_address)
+        print("Submitted Email           :", results['email'])
+        print("Email Reputation          :", results['reputation'])
+        print("Is Email Suspicious       :", results['suspicious'])
+        print("Is Email Blacklisted      :", results['details']['blacklisted'])
+        print("Recent Malicious Activity :", results['details']['malicious_activity_recent'])
+        print("Credential Leak           :", results['details']['credentials_leaked'])
+        print("Recent Credential Leak    :", results['details']['credentials_leaked_recent'])
+        print("Found in Data Breach      :", results['details']['data_breach'])
+        print("Domain Reputation         :", results['details']['domain_reputation'])
+        print("Number of Days since Domain Creation :", results['details']['days_since_domain_creation'])
+        print("Spam Reputation           :", results['details']['spam'])
+        print("is Domain Spoofable       :", results['details']['spoofable'])
+        print("Profiles                  :", results['details']['profiles'])
+        print("Summary :\n", results['summary'])
+    except:
+        print("Email Not Found")
+    menu()
+
+def phishing_site():
+    url = str(input("Enter URL to check :").strip())
+    reputation_check.check_url_reputation(url)
+    menu()
+
+def attachment_sandbox():
+    file_sandbox.file_sandbox()
+    menu()
+
+def header_analysis():
+    root = tkinter.Tk()
+    root.filename = tkinter.filedialog.askopenfilename(title="Select Message File(.eml)")
+    f = open(root.filename)
+    msg = email.message_from_file(f)
+    f.close()
+    parser = email.parser.HeaderParser()
+    headers = parser.parsestr(msg.as_string())
+    for h in headers.items():
+        print(h)
+    root.destroy()
+    menu()
+
+def guidelines():
+    webbrowser.open(r'Phishing_Identification.png')
+    menu()
