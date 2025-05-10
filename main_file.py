@@ -61,5 +61,5 @@ if __name__ == '__main__' :
         print("옵션 8: 도움말 & 설정/재설정")
         print("옵션 0: 도구 종료")
         
-        selected_option=int(input())
+        selected_option=int(input().strip())
         main_switch(selected_option)

@@ -6,7 +6,7 @@ from tkinter import filedialog
 def menu():
     print("\n")
     print("----------------------------")
-    print("IP 또는 URL 비식별화 ([.] or hxxp:// or hxxps:// or [:])")
+    print("이메일용 IOC 변환(비식별화)")
     print("----------------------------\n")
     print("아래 옵션 중 하나를 선택하세요 :")
     print("옵션 1: 단일 입력")
